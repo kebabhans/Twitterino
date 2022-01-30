@@ -20,7 +20,7 @@ public class TwitterClient {
         // Consume stream of tweets, and pass them on to FakeTweetPublisher
         CompletableFuture<HttpResponse<Void>> response = HttpClient.newBuilder()
                 .build()
-                .sendAsync(request, HttpResponse.BodyHandlers.fromLineSubscriber(new FakeTweetPublisher()));
+                .sendAsync(request, HttpResponse.BodyHandlers.fromLineSubscriber(new KafkaPublisher()));
         System.out.println("Awaiting result");
         response.get();
         System.out.println("Stopping");
