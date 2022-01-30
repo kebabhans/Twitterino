@@ -36,3 +36,36 @@ You should also be able to navigate to http://localhost:5601/ to get the Kibana 
 
 
 
+## Run Kafka (and zookeeper)
+
+From `docker-compose` folder, run
+
+```
+docker-compose -f kafka.yaml up -d
+```
+
+Now run ...
+
+```
+docker ps
+```
+
+...to check that a `zookeeper` and a `kafka` container are now running
+
+
+
+### One-time setup of `Tweets` kafka-topic (commandline)
+
+This assumes you have the `kafka-topics` command-line utility installed. Check [this quick-start guide](https://kafka.apache.org/quickstart) to get set up.
+
+Assuming `kafka` and `zookeeper` are already running, run
+
+```
+kafka-topics.sh --bootstrap-server 127.0.0.1:29092 --create --topic tweets --partitions 1 --replication-factor 1
+```
+
+
+
+### One-time setup of `Tweets` kafka-topic (GUI)
+
+Look into [Conduktor](https://www.conduktor.io/) (requires Java 11), and create a topic named `tweets` with a replication-factor of 1 and with a single partition. 
