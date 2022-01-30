@@ -1,4 +1,4 @@
-package KafkaConsumer;
+package TweetConsumer;
 
 import TwitterResponse.TwitterResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,10 +11,8 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -47,6 +45,12 @@ public class TweetConsumer {
 
         // Create the consumer
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Closing TweetConsumer");
+            consumer.close();
+            logger.info("TweetConsumer closed, exiting...");
+        }));
 
         // Subscribe consumer to out topics
         consumer.subscribe(Collections.singleton(topic));
