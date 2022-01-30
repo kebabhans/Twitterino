@@ -11,3 +11,28 @@ This project contains
 - [TODO] A TweetConsumer, that consumes tweets off of topic "tweets" and pushes these into ElasticSearch
 - [TODO] docker-compose file for "up'ing" a Kibana+Elasticsearch stack
 - [TODO] docker-compose file for "up'ing" a Kafka stack
+
+
+
+
+
+## Run ElasticSearch and Kibana stack
+
+From `docker-compose` folder, run
+
+```
+docker-compose -f docker-compose.yaml up -d
+```
+
+Now run ...
+
+```
+docker ps
+```
+
+...to check that two containers are now running
+
+You should also be able to navigate to http://localhost:5601/ to get the Kibana frontend. 
+
+
+
