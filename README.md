@@ -14,6 +14,23 @@ This project contains
 
 
 
+## Prerequisities
+
+In order to run this stack you'll need
+
+- A Twitter-developer account (free), specifically
+  - a bearer-token is required in order to connect to Twitter's API
+- `docker` installed
+- `kafka` command-line utilities installed, see [this quick-start guide](https://kafka.apache.org/quickstart) to get set up.
+- Java installed
+- Gradle installed
+
+
+
+### Additional setup
+
+In order to stream tweets you'll also need to setup some *filtered stream rules*. Check out Twitter's developer documentation. Currently the ids of my filtered stream rules are hardcoded into `KafkaPublisher` and you'll need to adjust these accordingly. 
+
 
 
 ## Run ElasticSearch and Kibana stack
