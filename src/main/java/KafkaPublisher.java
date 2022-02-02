@@ -6,6 +6,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -16,10 +18,14 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.Future;
 
+import static org.apache.kafka.clients.producer.ProducerConfig.*;
+
 /**
  * Places payloads (tweets) on Kafka topic
  */
 public class KafkaPublisher implements Flow.Subscriber<String> {
+    Logger logger = LoggerFactory.getLogger(KafkaPublisher.class);
+
     private Subscription subscription;
 
     private String dkPolRuleId = "1467946401745326086";
@@ -49,8 +55,27 @@ public class KafkaPublisher implements Flow.Subscriber<String> {
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
+        // Make producer safe
+        properties.setProperty(ENABLE_IDEMPOTENCE_CONFIG, "true");
+        properties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+        properties.setProperty(RETRIES_CONFIG, Integer.toString(Integer.MAX_VALUE));
+        properties.setProperty(MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5");
+
+        // Apply message compression to payload
+        properties.setProperty(COMPRESSION_TYPE_CONFIG, "snappy");
+
+        properties.setProperty(LINGER_MS_CONFIG, "20"); // Allow for (maximim of) 20ms delay before sending a message
+        properties.setProperty(BATCH_SIZE_CONFIG, Integer.toString(32*1024)); // Increase batch-size (default 16kB)
+
         // Create producer
         this.kafkaProducer = new KafkaProducer<>(properties);
+
+        // Add shutdown hook
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Enter shutdown hook, asking kafkaproducer to shutdown");
+            this.kafkaProducer.close();
+            logger.info("kafkaproducer closed, exiting");
+        }));
     }
 
     @Override
