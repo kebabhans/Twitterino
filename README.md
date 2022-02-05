@@ -67,7 +67,7 @@ Now run ...
 docker ps
 ```
 
-...to check that a `zookeeper` and a `kafka` container are now running
+...to check that a `zookeeper` and three `kafka` containers are now running
 
 
 
@@ -78,11 +78,51 @@ This assumes you have the `kafka-topics` command-line utility installed. Check [
 Assuming `kafka` and `zookeeper` are already running, run
 
 ```
-kafka-topics.sh --bootstrap-server 127.0.0.1:29092 --create --topic tweets --partitions 1 --replication-factor 1
+kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --create --topic tweets --partitions 3 --replication-factor 3 --config min.insync.replicas 2
 ```
+
+
 
 
 
 ### One-time setup of `Tweets` kafka-topic (GUI)
 
 Look into [Conduktor](https://www.conduktor.io/) (requires Java 11), and create a topic named `tweets` with a replication-factor of 1 and with a single partition. 
+
+
+
+## Other maybe-useful commands
+
+
+
+### Delete topic
+
+```
+kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --delete --topic tweets
+```
+
+
+
+### Listing topics
+
+``` 
+kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --list
+```
+
+
+
+### List messages on a topic
+
+```
+kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic tweets
+```
+
+Note that this command 
+
+- does not return before you stop it (`Ctrl`+`c`)
+- does not show/print anything until messages have been posted to the topic
+
+
+
+### Describe a topic
+
